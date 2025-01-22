@@ -22,10 +22,14 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_PERSISTENT => false,
     ];
+    if($_SERVER['DB_SSL'] == 1) {
+        $options[PDO::MYSQL_ATTR_SSL_CA] = '';
+        $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+    }
     $pdo = new PDO(
-        'mysql:host=' . $_SERVER['MDEL_DBURL'] . ';port=' . $_SERVER['MDEL_DBPORT'] . ';dbname=' . $_SERVER['MDEL_DBNAME'] . ';charset=utf8mb4',
-        $_SERVER['MDEL_DBUSER'],
-        $_SERVER['MDEL_DBPASSWORD'] ?? null,
+        'mysql:host=' . $_SERVER['DB_URL'] . ';port=' . $_SERVER['DB_PORT'] . ';dbname=' . $_SERVER['DB_NAME'] . ';charset=utf8mb4',
+        $_SERVER['DB_USER'],
+        $_SERVER['DB_PASSWORD'] ?? null,
         $options);
 
     // Création de la table de test
