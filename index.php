@@ -13,6 +13,8 @@ error_reporting(E_ALL);
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 
+$count = $_SERVER['LINE_COUNT'];
+
 try {
     // Connexion à la base de données
     $options = [
@@ -39,44 +41,44 @@ try {
     // Préparation de l'insertion
     $insertStmt = $pdo->prepare("INSERT INTO benchmark_test (data) VALUES (:data)");
 
-    // Insertion de 100 000 lignes
+    // Insertion des lignes
     $startTime = microtime(true);
     $pdo->beginTransaction();
-    for ($i = 1; $i <= 100000; $i++) {
+    for ($i = 1; $i <= $count; $i++) {
         $insertStmt->execute([':data' => 'Ligne de test ' . $i]);
     }
     $pdo->commit();
     $insertDuration = microtime(true) - $startTime;
-    echo "Insertion de 100 000 lignes terminée en " . number_format($insertDuration, 2) . " secondes.<br>";
+    echo "Insertion de $count lignes terminée en " . number_format($insertDuration, 2) . " secondes.<br>";
 
     // Préparation des requêtes de lecture et d'écriture
     $selectStmt = $pdo->prepare("SELECT * FROM benchmark_test WHERE id = :id");
     $updateStmt = $pdo->prepare("UPDATE benchmark_test SET data = :data WHERE id = :id");
 
-    // Exécution de 100 000 lectures aléatoires
+    // Exécution des lectures aléatoires
     $startTime = microtime(true);
-    for ($i = 1; $i <= 100000; $i++) {
-        $randomId = rand(1, 1000000);
+    for ($i = 1; $i <= $count; $i++) {
+        $randomId = rand(1, $count0);
         $selectStmt->execute([':id' => $randomId]);
         $selectStmt->fetch();
     }
     $selectDuration = microtime(true) - $startTime;
-    echo "100 000 lectures aléatoires terminées en " . number_format($selectDuration, 2) . " secondes.<br>";
+    echo "$count lectures aléatoires terminées en " . number_format($selectDuration, 2) . " secondes.<br>";
 
-    // Exécution de 100 000 écritures aléatoires
+    // Exécution des écritures aléatoires
     $startTime = microtime(true);
     $pdo->beginTransaction();
-    for ($i = 1; $i <= 100000; $i++) {
-        $randomId = rand(1, 1000000);
+    for ($i = 1; $i <= $count; $i++) {
+        $randomId = rand(1, $count0);
         $updateStmt->execute([':id' => $randomId, ':data' => 'Mise à jour ' . $i]);
     }
     $pdo->commit();
     $updateDuration = microtime(true) - $startTime;
-    echo "100 000 écritures aléatoires terminées en " . number_format($updateDuration, 2) . " secondes.<br>";
+    echo "$count écritures aléatoires terminées en " . number_format($updateDuration, 2) . " secondes.<br>";
 
     // Calcul des performances
-    $selectQPS = 100000 / $selectDuration;
-    $updateQPS = 100000 / $updateDuration;
+    $selectQPS = $count / $selectDuration;
+    $updateQPS = $count / $updateDuration;
     echo "Performances :<br>";
     echo "- Lectures aléatoires : " . number_format($selectQPS, 2) . " requêtes par seconde.<br>";
     echo "- Écritures aléatoires : " . number_format($updateQPS, 2) . " requêtes par seconde.<br>";
