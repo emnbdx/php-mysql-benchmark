@@ -58,7 +58,7 @@ try {
     // Exécution des lectures aléatoires
     $startTime = microtime(true);
     for ($i = 1; $i <= $count; $i++) {
-        $randomId = rand(1, $count0);
+        $randomId = rand(1, $count);
         $selectStmt->execute([':id' => $randomId]);
         $selectStmt->fetch();
     }
@@ -69,7 +69,7 @@ try {
     $startTime = microtime(true);
     $pdo->beginTransaction();
     for ($i = 1; $i <= $count; $i++) {
-        $randomId = rand(1, $count0);
+        $randomId = rand(1, $count);
         $updateStmt->execute([':id' => $randomId, ':data' => 'Mise à jour ' . $i]);
     }
     $pdo->commit();
